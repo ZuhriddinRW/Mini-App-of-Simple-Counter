@@ -1,24 +1,39 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useState, useEffect } from 'react';
 
 const counterReducer = (state, action) => {
+  let newState;
+
   switch (action.type) {
     case 'INCREMENT':
-      return { count: state.count + 1 };
+      newState = { count: state.count + 1 };
+      break;
     case 'DECREMENT':
-      return { count: state.count - 1 };
+      newState = { count: state.count - 1 };
+      break;
     case 'INCREMENT_BY':
-      return { count: state.count + action.value };
+      newState = { count: state.count + action.value };
+      break;
     case 'DECREMENT_BY':
-      return { count: state.count - action.value };
+      newState = { count: state.count - action.value };
+      break;
     case 'RESET':
-      return { count: 0 };
+      newState = { count: 0 };
+      break;
     default:
       return state;
   }
+
+  localStorage.setItem('counterValue', JSON.stringify(newState.count));
+  return newState;
 };
 
 const Counter = () => {
-  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+  const initialCount = () => {
+    const savedCount = localStorage.getItem('counterValue');
+    return savedCount ? { count: JSON.parse(savedCount) } : { count: 0 };
+  };
+
+  const [state, dispatch] = useReducer(counterReducer, initialCount());
   const [inputValue, setInputValue] = useState(5);
 
   const getCounterColor = () => {
